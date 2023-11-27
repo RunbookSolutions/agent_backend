@@ -13,6 +13,7 @@
                 <th class="py-2 px-4 border-b">ID</th>
                 <th class="py-2 px-4 border-b">Name</th>
                 <th class="py-2 px-4 border-b">Actions</th>
+                <th class="py-2 px-4 border-b">View Details</th> <!-- New column for View Details -->
             </tr>
         </thead>
         <!-- Table body -->
@@ -28,7 +29,7 @@
                         </form>
                     </td>
                     <td class="py-2 px-4 border-b">
-                        <a href="{{ url_for('admin.edit_agent', agent_id=agent.id) }}" class="text-blue-500">Edit</a>
+                        <a href="{{ url_for('admin.view_agent', agent_id=agent.id) }}" class="text-green-500">View Details</a>
                     </td>
                 </tr>
             {% endfor %}

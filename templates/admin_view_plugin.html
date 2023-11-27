@@ -6,6 +6,9 @@
 {% block content %}
     <h1 class="text-2xl font-bold mb-4">View Plugin</h1>
     {% if plugin %}
+        <div class="mb-4">
+            <a href="{{ url_for('admin.edit_plugin', plugin_id=plugin.id) }}" class="text-blue-500">Edit Plugin</a>
+        </div>
         <p>ID: {{ plugin.id }}</p>
         <p>Name: {{ plugin.name }}</p>
         <p>Description: {{ plugin.description }}</p>
@@ -23,6 +26,9 @@
                             <li>{{ argument.key }} (Type: {{ argument.key_type }})</li>
                         {% endfor %}
                     </ul>
+                    <div class="mb-2">
+                        <a href="{{ url_for('admin.delete_command', command_id=command.id) }}" class="text-red-500">Delete Command</a>
+                    </div>
                 </li>
             {% endfor %}
         </ul>

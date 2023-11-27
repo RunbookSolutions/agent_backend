@@ -1,32 +1,30 @@
-<!-- templates/admin_create_plugin.html -->
+<!-- templates/admin_edit_plugin.html -->
 {% extends 'layout.html' %}
 
-{% block title %}Create Plugin{% endblock %}
+{% block title %}Edit Plugin - {{ plugin.name }}{% endblock %}
 
 {% block content %}
-    <h1 class="text-2xl font-bold mb-4">Create Plugin</h1>
-    <form method="post" action="{{ url_for('admin.create_plugin') }}" class="max-w-2xl">
+    <h1 class="text-2xl font-bold mb-4">Edit Plugin - {{ plugin.name }}</h1>
+
+    <form method="post" action="{{ url_for('admin.edit_plugin', plugin_id=plugin.id) }}" class="max-w-2xl">
         <div class="mb-4">
             <label for="name" class="block text-sm font-semibold text-gray-600">Plugin Name:</label>
-            <input type="text" id="name" name="name" required class="w-full px-4 py-2 border rounded-md">
+            <input type="text" id="name" name="name" value="{{ plugin.name }}" required class="w-full px-4 py-2 border rounded-md">
         </div>
 
         <div class="mb-4">
             <label for="version" class="block text-sm font-semibold text-gray-600">Version:</label>
-            <input type="text" id="version" name="version" required class="w-full px-4 py-2 border rounded-md">
+            <input type="text" id="version" name="version" value="{{ plugin.version }}" required class="w-full px-4 py-2 border rounded-md">
         </div>
 
         <div class="mb-4">
             <label for="description" class="block text-sm font-semibold text-gray-600">Description:</label>
-            <textarea id="description" name="description" class="w-full px-4 py-2 border rounded-md"></textarea>
+            <textarea id="description" name="description" class="w-full px-4 py-2 border rounded-md">{{ plugin.description }}</textarea>
         </div>
 
         <div class="mb-4">
             <label for="script" class="block text-sm font-semibold text-gray-600">Script:</label>
-            <textarea id="script" name="script" required class="w-full px-4 py-2 border rounded-md resize-none h-40">
-class Plugin:
-    def __init__(self) -> None:
-        pass</textarea>
+            <textarea id="script" name="script" required class="w-full px-4 py-2 border rounded-md resize-none h-40">{{ plugin.script }}</textarea>
         </div>
 
         <!-- Include CodeMirror -->
@@ -49,14 +47,40 @@ class Plugin:
         <div class="mb-4">
             <label class="block text-sm font-semibold text-gray-600">Commands:</label>
             <div id="commands-container">
+                {% for command in plugin.commands %}
+                    <div class="mb-2">
+                        <input type="text" name="commands[{{command.id}}]" placeholder="Command Name" value="{{ command.name }}" class="w-1/4 px-4 py-2 border rounded-md">
+                        <input type="text" name="descriptions[{{command.id}}]" placeholder="Description" value="{{ command.description }}" class="w-1/4 px-4 py-2 border rounded-md">
+                        <input type="text" name="functions[{{command.id}}]" placeholder="Function" value="{{ command.function }}" class="w-1/4 px-4 py-2 border rounded-md">
+                        <button type="button" onclick="addArgumentInput(this, '{{ command.id }}')" class="bg-blue-500 text-white px-4 py-2 rounded-md ml-2">Add Argument</button>
+                    </div>
+                    <!-- Display existing arguments for the command -->
+                    {% for argument in command.arguments %}
+                        <div class="flex mb-2">
+                            <input type="text" name="arguments_keys[{{command.id}}][{{argument.id}}]" placeholder="Argument Key" value="{{ argument.key }}" class="w-1/4 px-4 py-2 border rounded-md">
+                            <select name="arguments_types[{{command.id}}][{{argument.id}}]" class="w-1/4 px-4 py-2 border rounded-md ml-2">
+                                <option value="string" {% if argument.key_type == 'string' %}selected{% endif %}>String</option>
+                                <option value="number" {% if argument.key_type == 'number' %}selected{% endif %}>Number</option>
+                            </select>
+                            <button type="button" onclick="removeArgumentInput(this)" class="bg-red-500 text-white px-4 py-2 rounded-md ml-2">Remove</button>
+                        </div>
+                    {% endfor %}
+                {% endfor %}
+            </div>
+        </div>
+
+        <!-- New commands input -->
+        <div class="mb-4">
+            <label class="block text-sm font-semibold text-gray-600">New Commands:</label>
+            <div>
                 <button type="button" onclick="addCommandInput()" class="bg-blue-500 text-white px-4 py-2 rounded-md mb-2">Add Command</button>
-                <!-- Dynamic arguments input -->
                 <div id="arguments-container"></div>
             </div>
         </div>
 
-        <button type="submit" class="bg-blue-500 text-white px-6 py-2 rounded-md">Create Plugin</button>
+        <button type="submit" class="bg-blue-500 text-white px-6 py-2 rounded-md">Update Plugin</button>
     </form>
+
     <script>
         var commandIndex = 0;
         function addCommandInput() {
@@ -95,9 +119,6 @@ class Plugin:
             var argumentDiv = button.closest('div');
             argumentDiv.remove();
         }
-
-        // Initially add the first command with the "Add Argument" button
-        addCommandInput();
     </script>
 
 {% endblock %}

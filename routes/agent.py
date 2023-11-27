@@ -1,6 +1,6 @@
 # admin_routes.py
 from flask import Blueprint, request, jsonify
-from models import Agent, Plugin, Task
+from models import Agent, Plugin, Task, Command, Argument, Response
 from database import db
 import uuid
 
@@ -41,7 +41,7 @@ def get_plugin_info(plugin_id):
         return jsonify({"error": "Agent not found"}), 404
 
     # Get the plugin by ID
-    plugin = Plugin.query.filter_by(id=plugin_id, agent_id=agent.id).first()
+    plugin = Plugin.query.filter_by(id=plugin_id).first()
 
     if plugin is None:
         return jsonify({"error": "Plugin not found"}), 404
@@ -84,10 +84,11 @@ def get_agent_tasks():
         {
             "id": task.id,
             "command": task.command,
-            "cron": task.cron,
-            "arguments": task.arguments
+            "cron": task.cron if task.cron != "" else None,
+            "arguments": task.arguments if task.arguments is not None else "{}"
         }
         for task in tasks
+        if task.cron != "" or not task.task_response  # Exclude tasks with no cron and with responses
     ]
 
     return jsonify({"data": tasks_data})
@@ -115,5 +116,9 @@ def post_task_result(task_id):
     task.result = result_data
     db.session.commit()
 
-    return jsonify({"message": "Task result successfully received"})
+    # Create a Response and associate it with the Task
+    response = Response(id=str(uuid.uuid4()), data=result_data, task_id=task.id)
+    db.session.add(response)
+    db.session.commit()
 
+    return jsonify({"message": "Task result successfully received"})

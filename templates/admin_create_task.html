@@ -1,0 +1,84 @@
+<!-- templates/admin_create_task.html -->
+{% extends 'layout.html' %}
+
+{% block title %}Create Task{% endblock %}
+
+{% block content %}
+    <h1 class="text-2xl font-bold mb-4">Create Task for {{ agent.name }}</h1>
+
+    <form method="post" id="createTaskForm">
+        <div class="mb-4">
+            <label for="command_id">Select Command:</label>
+            <select id="command_id" name="command_id" required>
+                {% for command in available_commands %}
+                    <option value="{{ command.id }}">{{ command.name }} - {{ command.function }}</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div class="mb-4">
+            <label for="cron">Cron Expression:</label>
+            <input type="text" id="cron" name="cron">
+        </div>
+
+        <div class="mb-4" id="argument_fields">
+        </div>
+        <input type="hidden" id="arguments_json" name="arguments">
+
+        <button type="submit" class="bg-blue-500 text-white p-2 rounded">Create Task</button>
+    </form>
+    <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+    <script>
+        // Function to update argument fields based on selected command
+        function updateArgumentFields() {
+            var commandId = $('#command_id').val();
+            var argumentsUrl = "{{ url_for('admin.get_command_arguments', command_id='__command_id__') }}".replace('__command_id__', commandId);
+
+            // Fetch the arguments for the selected command using AJAX
+            $.get(argumentsUrl, function (data) {
+                // Generate HTML for argument fields
+                var argumentFieldsHTML = '';
+                $.each(data.arguments, function (index, argument) {
+                    argumentFieldsHTML += `
+                        <label for="${argument.key}">${argument.key}:</label>
+                        <input type="${argument.key_type}" id="argument[${argument.key}]" name="${argument.key}" required>
+                    `;
+                });
+
+                // Replace the content of the argument_fields div with the new argument fields
+                $('#argument_fields').html(argumentFieldsHTML);
+            });
+        }
+
+        // Bind the function to the change event of the command_id select
+        $('#command_id').change(function () {
+            updateArgumentFields();
+        });
+
+        // Create submit event handler for the form
+        $('#createTaskForm').submit(function (event) {
+            // Log the key-value JSON of all arguments
+            var argumentsJson = {};
+            $('#argument_fields input').each(function () {
+                var name = $(this).attr('name');
+                var value = $(this).val();
+
+                // Determine the argument type based on the input type
+                var argumentType = $(this).attr('type');
+                if (argumentType === 'number') {
+                    value = parseFloat(value); // Parse as a float or integer based on your needs
+                } else if (argumentType === 'checkbox') {
+                    value = $(this).prop('checked'); // Parse as a boolean for checkboxes
+                }
+
+                argumentsJson[name] = value;
+            });
+
+            $('#arguments_json').val(JSON.stringify(argumentsJson));
+            return true;
+        });
+
+        // Call the function initially to set up the initial state
+        updateArgumentFields();
+    </script>
+{% endblock %}
