@@ -1,0 +1,22 @@
+<!-- templates/admin_tasks.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin - Tasks</title>
+    <!-- Add Tailwind CSS via CDN -->
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+</head>
+<body>
+
+<h1>Admin - Tasks for {{ agent.name }} (ID: {{ agent.id }})</h1>
+
+<ul>
+    {% for task in tasks %}
+        <li>Task ID: {{ task.id }}, Command: {{ task.command }}, Cron: {{ task.cron }}, Arguments: {{ task.arguments }}</li>
+    {% endfor %}
+</ul>
+
+</body>
+</html>

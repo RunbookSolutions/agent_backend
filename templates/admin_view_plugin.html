@@ -1,0 +1,32 @@
+<!-- templates/admin_view_plugin.html -->
+{% extends 'layout.html' %}
+
+{% block title %}View Plugin{% endblock %}
+
+{% block content %}
+    <h1 class="text-2xl font-bold mb-4">View Plugin</h1>
+    {% if plugin %}
+        <p>ID: {{ plugin.id }}</p>
+        <p>Name: {{ plugin.name }}</p>
+        <p>Description: {{ plugin.description }}</p>
+        <p>Version: {{ plugin.version }}</p>
+        <p>Script:</p>
+        <pre class="bg-gray-200 p-4 rounded">{{ plugin.script }}</pre>
+
+        <h2 class="text-xl font-bold mt-4">Commands:</h2>
+        <ul>
+            {% for command in plugin.commands %}
+                <li>
+                    <strong>{{ command.name }}</strong>: {{ command.description }}
+                    <ul>
+                        {% for argument in command.arguments %}
+                            <li>{{ argument.key }} (Type: {{ argument.key_type }})</li>
+                        {% endfor %}
+                    </ul>
+                </li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p>Plugin not found</p>
+    {% endif %}
+{% endblock %}

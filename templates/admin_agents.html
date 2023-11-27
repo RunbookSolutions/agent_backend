@@ -1,0 +1,37 @@
+<!-- templates/admin_list_agents.html -->
+{% extends 'layout.html' %}
+
+{% block title %}Agent List{% endblock %}
+
+{% block content %}
+    <h1 class="text-2xl font-bold mb-4">Agent List</h1>
+    <!-- Your existing content here -->
+    <table class="min-w-full bg-white border border-gray-300">
+        <!-- Table headers -->
+        <thead>
+            <tr>
+                <th class="py-2 px-4 border-b">ID</th>
+                <th class="py-2 px-4 border-b">Name</th>
+                <th class="py-2 px-4 border-b">Actions</th>
+            </tr>
+        </thead>
+        <!-- Table body -->
+        <tbody>
+            <!-- Loop through agents and display information -->
+            {% for agent in agents %}
+                <tr>
+                    <td class="py-2 px-4 border-b">{{ agent.id }}</td>
+                    <td class="py-2 px-4 border-b">
+                        <form method="post" action="{{ url_for('admin.edit_agent', agent_id=agent.id) }}" class="inline">
+                            <input type="text" id="new_name" name="new_name" value="{{ agent.name }}" required class="border p-2 rounded">
+                            <button type="submit" class="bg-blue-500 text-white p-2 rounded mt-2">Change Name</button>
+                        </form>
+                    </td>
+                    <td class="py-2 px-4 border-b">
+                        <a href="{{ url_for('admin.edit_agent', agent_id=agent.id) }}" class="text-blue-500">Edit</a>
+                    </td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% endblock %}

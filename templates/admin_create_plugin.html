@@ -1,0 +1,103 @@
+<!-- templates/admin_create_plugin.html -->
+{% extends 'layout.html' %}
+
+{% block title %}Create Plugin{% endblock %}
+
+{% block content %}
+    <h1 class="text-2xl font-bold mb-4">Create Plugin</h1>
+    <form method="post" action="{{ url_for('admin.create_plugin') }}" class="max-w-2xl">
+        <div class="mb-4">
+            <label for="name" class="block text-sm font-semibold text-gray-600">Plugin Name:</label>
+            <input type="text" id="name" name="name" required class="w-full px-4 py-2 border rounded-md">
+        </div>
+
+        <div class="mb-4">
+            <label for="version" class="block text-sm font-semibold text-gray-600">Version:</label>
+            <input type="text" id="version" name="version" required class="w-full px-4 py-2 border rounded-md">
+        </div>
+
+        <div class="mb-4">
+            <label for="description" class="block text-sm font-semibold text-gray-600">Description:</label>
+            <textarea id="description" name="description" class="w-full px-4 py-2 border rounded-md"></textarea>
+        </div>
+
+        <div class="mb-4">
+            <label for="script" class="block text-sm font-semibold text-gray-600">Script:</label>
+            <textarea id="script" name="script" required class="w-full px-4 py-2 border rounded-md resize-none h-40">
+class Plugin:
+    def __init__(self) -> None:
+        pass
+            </textarea>
+        </div>
+
+        <!-- Include CodeMirror -->
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.62.2/codemirror.min.css">
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.62.2/codemirror.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.62.2/mode/python/python.min.js"></script>
+
+        <!-- Initialize CodeMirror -->
+        <script>
+            document.addEventListener('DOMContentLoaded', function () {
+                var editor = CodeMirror.fromTextArea(document.getElementById('script'), {
+                    lineNumbers: true,
+                    mode: 'python', // Set the desired language mode
+                    theme: 'default', // You can change the theme if needed
+                });
+            });
+        </script>
+
+        <!-- Dynamic commands input -->
+        <div class="mb-4">
+            <label class="block text-sm font-semibold text-gray-600">Commands:</label>
+            <div id="commands-container">
+                <button type="button" onclick="addCommandInput()" class="bg-blue-500 text-white px-4 py-2 rounded-md mb-2">Add Command</button>
+                <!-- Dynamic arguments input -->
+                <div id="arguments-container"></div>
+            </div>
+        </div>
+
+        <button type="submit" class="bg-blue-500 text-white px-6 py-2 rounded-md">Create Plugin</button>
+    </form>
+    <script>
+        function addCommandInput() {
+            var container = document.getElementById('commands-container');
+            var commandDiv = document.createElement('div');
+            commandDiv.classList.add('mb-2');
+            commandDiv.innerHTML = `
+                <div class="mb-2">
+                    <input type="text" name="commands[]" placeholder="Command Name" class="w-1/4 px-4 py-2 border rounded-md">
+                    <input type="text" name="descriptions[]" placeholder="Description" class="w-1/4 px-4 py-2 border rounded-md">
+                    <input type="text" name="functions[]" placeholder="Function" class="w-1/4 px-4 py-2 border rounded-md">
+                    <button type="button" onclick="addArgumentInput(this)" class="bg-blue-500 text-white px-4 py-2 rounded-md ml-2">Add Argument</button>
+                </div>
+            `;
+            container.appendChild(commandDiv);
+        }
+
+        function addArgumentInput(button) {
+            var commandDiv = button.closest('div');
+            var argumentDiv = document.createElement('div');
+            argumentDiv.classList.add('mb-2');
+            argumentDiv.innerHTML = `
+                <div class="flex mb-2">
+                    <input type="text" name="arguments_keys[]" placeholder="Argument Key" class="w-1/4 px-4 py-2 border rounded-md">
+                    <select name="arguments_types[]" class="w-1/4 px-4 py-2 border rounded-md ml-2">
+                        <option value="string">String</option>
+                        <option value="number">Number</option>
+                    </select>
+                    <button type="button" onclick="removeArgumentInput(this)" class="bg-red-500 text-white px-4 py-2 rounded-md ml-2">Remove</button>
+                </div>
+            `;
+            commandDiv.appendChild(argumentDiv);
+        }
+
+        function removeArgumentInput(button) {
+            var argumentDiv = button.closest('div');
+            argumentDiv.remove();
+        }
+
+        // Initially add the first command with the "Add Argument" button
+        addCommandInput();
+    </script>
+
+{% endblock %}

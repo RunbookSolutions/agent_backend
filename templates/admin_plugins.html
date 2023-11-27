@@ -1,0 +1,35 @@
+<!-- templates/admin_plugins.html -->
+{% extends 'layout.html' %}
+
+{% block title %}Admin - Plugins{% endblock %}
+
+{% block content %}
+    <h1 class="text-2xl font-bold mb-4">Admin - Plugins</h1>
+
+    <a href="{{ url_for('admin.create_plugin') }}" class="text-blue-500 mb-4 block">Create New Plugin</a>
+
+    <table class="min-w-full bg-white border border-gray-300">
+        <!-- Table headers -->
+        <thead>
+            <tr>
+                <th class="py-2 px-4 border-b">ID</th>
+                <th class="py-2 px-4 border-b">Name</th>
+                <th class="py-2 px-4 border-b">Actions</th>
+            </tr>
+        </thead>
+        <!-- Table body -->
+        <tbody>
+            {% for plugin in plugins %}
+                <tr>
+                    <td class="py-2 px-4 border-b">{{ plugin.id }}</td>
+                    <td class="py-2 px-4 border-b">
+                        <a href="{{ url_for('admin.view_plugin', plugin_id=plugin.id) }}" class="text-blue-500">{{ plugin.name }}</a>
+                    </td>
+                    <td class="py-2 px-4 border-b">
+                        <!-- Add more actions if needed -->
+                    </td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% endblock %}
